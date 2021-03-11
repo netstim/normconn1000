@@ -5,6 +5,7 @@ root='/Users/NetStim/Library/Group Containers/G69SCX94XU.duck/Library/Applicatio
 storagepath='/Users/NetStim/Documents/HCP1000_2/'; % folder to which the matrix will be written.
 % storagepath='/Volumes/Backup Plus/HCP1000/result/';
 backuppath='/Volumes/Backup Plus/HCP1000/';
+TR=0.72;
 %
 try
     delete('bucket');
@@ -45,7 +46,7 @@ else
 end
 
 if ~exist([storagepath,'nextsub.mat'],'file') % always start from the next subject after the last one that was done. This is done in case the script breaks.
-    nextsub=451;
+    nextsub=1;
     nextvox=1;
     nextvox_y=1;
 else
@@ -78,12 +79,15 @@ for sub=nextsub:length(subIDs)
          nii=ea_load_untouch_nii([root,num2str(subIDs(sub)),filesep,'MNINonLinear',filesep,'Results',filesep,runs{run},filesep,runs{run},'_hp2000_clean.nii.gz']);
         
         tc{run} = zeros(length(d.dataset.vol.outidx), size(nii.img,4),'single');
-        for vol=1:size(nii.img,4)
+        sampleLength=size(nii.img,4);
+        for vol=1:sampleLength
             thisimg=nii.img(:,:,:,vol);
             tc{run}(:,vol)=thisimg(d.dataset.vol.outidx);
         end
         tc{run} = tc{run} - repmat(ea_nanmean(tc{run},2),1,size(nii.img,4));
+        ea_bpfilter(tc{run},TR,sampleLength);
         ea_dispercent(run/length(runs));
+
      end
     elseif sum(runinfo(sub,1:2))==2 && sum(runinfo(sub,:))~=4
         tc = cell(1,2);   
@@ -92,11 +96,13 @@ for sub=nextsub:length(subIDs)
             nii=ea_load_untouch_nii([root,num2str(subIDs(sub)),filesep,'MNINonLinear',filesep,'Results',filesep,runNames{run},filesep,runNames{run},'_hp2000_clean.nii.gz']);
         
             tc{run} = zeros(length(d.dataset.vol.outidx), size(nii.img,4),'single');
+            sampleLength=size(nii.img,4);
             for vol=1:size(nii.img,4)
                 thisimg=nii.img(:,:,:,vol);
                 tc{run}(:,vol)=thisimg(d.dataset.vol.outidx);
             end
             tc{run} = tc{run} - repmat(ea_nanmean(tc{run},2),1,size(nii.img,4));
+            ea_bpfilter(tc{run},TR,sampleLength);
             ea_dispercent(run/length(runs));
         end
     elseif sum(runinfo(sub,3:4))==2 && sum(runinfo(sub,:))~=4
@@ -105,11 +111,13 @@ for sub=nextsub:length(subIDs)
             nii=ea_load_untouch_nii([root,num2str(subIDs(sub)),filesep,'MNINonLinear',filesep,'Results',filesep,runNames{run},filesep,runNames{run},'_hp2000_clean.nii.gz']);
         
             tc{run} = zeros(length(d.dataset.vol.outidx), size(nii.img,4),'single');
+            sampleLength=size(nii.img,4);
             for vol=1:size(nii.img,4)
                 thisimg=nii.img(:,:,:,vol);
                 tc{run}(:,vol)=thisimg(d.dataset.vol.outidx);
             end
             tc{run} = tc{run} - repmat(ea_nanmean(tc{run},2),1,size(nii.img,4));
+            ea_bpfilter(tc{run},TR,sampleLength);
             ea_dispercent(run/length(runs));
         end
     end
@@ -147,13 +155,13 @@ for sub=nextsub:length(subIDs)
             mat=corr(tc(:,from:to),tc(:,from_y:to_y),'rows','pairwise');
 
             nanchunk = uint16(isnan(mat));
-            if sub==451
+            if sub==1
                 nanmask.M(from:to,from_y:to_y)=nanchunk; % initialize matrix with first subject
             else
                 nanmask.M(from:to,from_y:to_y)=uint16(sum(cat(3,nanmask.M(from:to,from_y:to_y),nanchunk),3)); % add entry.
             end
 
-            if sub==451
+            if sub==1
                 db.X(from:to,from_y:to_y)=mat; % initialize matrix with first subject
             else
                 db.X(from:to,from_y:to_y)=ea_nansum(cat(3,db.X(from:to,from_y:to_y),mat),3); % add entry.
