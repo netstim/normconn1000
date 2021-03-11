@@ -1,6 +1,6 @@
 function ea_bpfilter(tc,TR,sampleLength)
-    lp_HighCutoff=options.prefs.lc.func.bphighcutoff;
-    hp_LowCutoff=options.prefs.lc.func.bplowcutoff;
+    lp_HighCutoff=0.08;
+    hp_LowCutoff=0.009;
 
     disp('Bandpass-filtering...');
     % sampleFreq   = 1/TR;
