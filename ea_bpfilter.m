@@ -48,9 +48,9 @@ function bptc=ea_bpfilter(tc,TR,sampleLength)
     tc =tc(:, 1:sampleLength);%remove the padded parts
 
     % Add the mean back after filter.
-    tc=tc+repmat(theMean,[1, sampleLength]);
+    bptc=tc+repmat(theMean,[1, sampleLength]);
 
-    disp('Done.');
+%     disp('Done.');
 
 %     if vizz
 %         subplot(3,2,pcnt)
