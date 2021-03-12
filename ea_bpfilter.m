@@ -1,4 +1,4 @@
-function ea_bpfilter(tc,TR,sampleLength)
+function bptc=ea_bpfilter(tc,TR,sampleLength)
     lp_HighCutoff=0.08;
     hp_LowCutoff=0.009;
 
