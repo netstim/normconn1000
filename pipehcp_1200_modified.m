@@ -85,7 +85,7 @@ for sub=nextsub:length(subIDs)
             tc{run}(:,vol)=thisimg(d.dataset.vol.outidx);
         end
         tc{run} = tc{run} - repmat(ea_nanmean(tc{run},2),1,size(nii.img,4));
-        ea_bpfilter(tc{run},TR,sampleLength);
+        tc=ea_bpfilter(tc{run},TR,sampleLength);
         ea_dispercent(run/length(runs));
 
      end
@@ -102,7 +102,7 @@ for sub=nextsub:length(subIDs)
                 tc{run}(:,vol)=thisimg(d.dataset.vol.outidx);
             end
             tc{run} = tc{run} - repmat(ea_nanmean(tc{run},2),1,size(nii.img,4));
-            ea_bpfilter(tc{run},TR,sampleLength);
+            tc=ea_bpfilter(tc{run},TR,sampleLength);
             ea_dispercent(run/length(runs));
         end
     elseif sum(runinfo(sub,3:4))==2 && sum(runinfo(sub,:))~=4
@@ -117,7 +117,7 @@ for sub=nextsub:length(subIDs)
                 tc{run}(:,vol)=thisimg(d.dataset.vol.outidx);
             end
             tc{run} = tc{run} - repmat(ea_nanmean(tc{run},2),1,size(nii.img,4));
-            ea_bpfilter(tc{run},TR,sampleLength);
+            tc=ea_bpfilter(tc{run},TR,sampleLength);
             ea_dispercent(run/length(runs));
         end
     end
